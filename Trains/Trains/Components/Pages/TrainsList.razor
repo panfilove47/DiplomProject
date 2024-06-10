@@ -1,0 +1,40 @@
+﻿@page "/train-list"
+
+@using ChartJs.Blazor.PieChart
+<PageTitle>Trains</PageTitle>
+
+
+@if (Trains == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>TrainType</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var train in Trains)
+            {
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="d-flex align-items-center ml-3">
+                                <a  href="@($"/train/{train.Id}")" class="btn btn-success" title="Открыть"></a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>@train.Id</td>
+                    <td>@train.Name</td>
+                    <td>@train.TrainType</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

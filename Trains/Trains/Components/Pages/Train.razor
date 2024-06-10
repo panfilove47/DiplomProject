@@ -1,0 +1,68 @@
+﻿@page "/train/{Id:int}"
+
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.LineChart
+
+@if (train == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <h3>@train.Name</h3>
+        <p>Тип поезда: @train.TrainType</p>
+
+         <table class="table">
+             <thead>
+                 <tr>
+                    <th>Номер поезда</th>
+                    <th>Название</th>
+                    <th>Станция</th>
+                    <th>Запланированное время отправления</th>
+                    <th>Запланированное время прибытия</th>
+                    <th>Реальное время отправления</th>
+                    <th>Реальное время прибытия</th>
+                    <th>Разница во времени отправления</th>
+                    <th>Разница во времени прибытия</th>
+                 </tr>
+             </thead>
+             <tbody>
+                 @foreach (var item in movements)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td>@item.To</td>
+                        <td>@item.ScheduleDepartureTime</td>
+                        <td>
+                            @if (item.ScheduleArrivalTime == default)
+                            {
+                                
+                            }
+                            else
+                            {
+                                @item.ScheduleArrivalTime
+                            }
+                            </td>
+                        <td>@item.RealDepartureTime</td>
+                        <td>
+                            @if (item.RealArrivalTime == default)
+                            {
+
+                            }
+                            else
+                            {
+                                @item.RealArrivalTime
+                            }
+                        </td>
+                        <td>@item.DifferenceDeparture</td>
+                        <td>@item.DifferenceArrival</td>
+                    </tr>
+                }
+             </tbody>
+         </table>
+    </div>
+}
+<Chart Config="_config" />
+
