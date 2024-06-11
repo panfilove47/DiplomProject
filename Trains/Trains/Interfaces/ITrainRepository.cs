@@ -10,6 +10,6 @@ namespace Trains.Interfaces
 
         Task<TrainDto> GetTrainById(int id);
 
-        Task<IEnumerable<TrainMovementsDto>> GetMovementsById(int id);
+        Task<IEnumerable<TrainMovementsDto>> GetMovementsById(int id, DateTime? From = null, DateTime? To = null);
     }
 }

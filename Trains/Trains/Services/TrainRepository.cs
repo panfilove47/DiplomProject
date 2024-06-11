@@ -59,15 +59,46 @@ namespace Trains.Services
             }
         }
 
-        public async Task<IEnumerable<TrainMovementsDto>> GetMovementsById(int id)
+        public async Task<IEnumerable<TrainMovementsDto>> GetMovementsById(int id, DateTime? From = null, DateTime? To = null)
         {
+            string query = default;
+            IEnumerable<TrainMovementsDto> result;
             using (IDbConnection db = new MySqlConnection(_connectionString))
             {
-                string query = @"select t.idtrain as 'Id', t.name as 'Name', concat(s.city, ""-"", s.name) as 'To', sc.DepartureTime as 'ScheduleDepartureTime', sc.ArrivalTime as 'ScheduleArrivalTime', tr.DepartureTime as 'RealDepartureTime', tr.ArrivalTime as 'RealArrivalTime' from train t
+                if (From == null && To == null)
+                {
+                    query = @"select t.idtrain as 'Id', t.name as 'Name', concat(s.city, ""-"", s.name) as 'To', sc.DepartureTime as 'ScheduleDepartureTime', sc.ArrivalTime as 'ScheduleArrivalTime', tr.DepartureTime as 'RealDepartureTime', tr.ArrivalTime as 'RealArrivalTime' from train t
 join  schedule sc on t.idtrain = sc.Train_idTrain
 join trainroute tr on t.idtrain = tr.Train_idTrain
-join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id;";
-                var result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id });
+join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id";
+                    result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id });
+                }
+                else if (To != null)
+                {
+                    query = @"select t.idtrain as 'Id', t.name as 'Name', concat(s.city, ""-"", s.name) as 'To', sc.DepartureTime as 'ScheduleDepartureTime', sc.ArrivalTime as 'ScheduleArrivalTime', tr.DepartureTime as 'RealDepartureTime', tr.ArrivalTime as 'RealArrivalTime' from train t
+join  schedule sc on t.idtrain = sc.Train_idTrain
+join trainroute tr on t.idtrain = tr.Train_idTrain
+join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id and sc.DepartureTime < @To";
+                    result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id, To });
+                }
+                else if (From != null)
+                {
+                    query = @"select t.idtrain as 'Id', t.name as 'Name', concat(s.city, ""-"", s.name) as 'To', sc.DepartureTime as 'ScheduleDepartureTime', sc.ArrivalTime as 'ScheduleArrivalTime', tr.DepartureTime as 'RealDepartureTime', tr.ArrivalTime as 'RealArrivalTime' from train t
+join  schedule sc on t.idtrain = sc.Train_idTrain
+join trainroute tr on t.idtrain = tr.Train_idTrain
+join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id and sc.DepartureTime > @From";
+                    result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id, From });
+                } 
+                else
+                {
+                    query = @"select t.idtrain as 'Id', t.name as 'Name', concat(s.city, ""-"", s.name) as 'To', sc.DepartureTime as 'ScheduleDepartureTime', sc.ArrivalTime as 'ScheduleArrivalTime', tr.DepartureTime as 'RealDepartureTime', tr.ArrivalTime as 'RealArrivalTime' from train t
+join  schedule sc on t.idtrain = sc.Train_idTrain
+join trainroute tr on t.idtrain = tr.Train_idTrain
+join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id and sc.DepartureTime between @From and @To)";
+                    result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id, To, From });
+                }
+
+                //result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id, from = From });
 
                 foreach (var movement in result)
                 {

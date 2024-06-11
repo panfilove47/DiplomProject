@@ -12,6 +12,18 @@ else
     <div>
         <h3>@train.Name</h3>
         <p>Тип поезда: @train.TrainType</p>
+        <div>
+            <label>Дата начала</label>
+            <InputDate @bind-Value="From"/>
+
+            <label>Дата конца</label>
+            <InputDate @bind-Value="To" />
+
+            <button @onclick="Search">Поиск</button>
+
+            <button @onclick="AddDiagramm">Показать графики</button>
+        </div>
+
 
          <table class="table">
              <thead>
@@ -62,7 +74,12 @@ else
                 }
              </tbody>
          </table>
-        <Chart Config="_config" />
+         @if (ShowCharts)
+        {
+            <Chart Config="_arr" />
+            <Chart Config="_dep" />
+            <Chart Config="_diff" />
+        }
     </div>
 }
 

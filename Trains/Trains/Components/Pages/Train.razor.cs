@@ -23,14 +23,21 @@ namespace Trains.Components.Pages
 
         private IEnumerable<TrainMovementsDto> movements;
 
-        private LineConfig _config;
+        public DateTime? From;
+
+        public DateTime? To;
+
+        private LineConfig _arr;
+
+        private LineConfig _dep;
+
+        private LineConfig _diff;
+
+        public bool ShowCharts { get; set; } = false;
 
         protected override async void OnInitialized()
         {
-            train = await trainRepository.GetTrainById(Id);
-
-            movements = await trainRepository.GetMovementsById(Id);
-            AddDiagramm();
+            await LoadAsync();
             base.OnInitialized();
         }
 
@@ -38,64 +45,87 @@ namespace Trains.Components.Pages
         {
             train = await trainRepository.GetTrainById(Id);
 
-            movements = await trainRepository.GetMovementsById(Id);
+            movements = await trainRepository.GetMovementsById(Id, From, To);
 
         }
 
+        protected async Task LoadAsync(CancellationToken ct = default)
+        {
+            train = await trainRepository.GetTrainById(Id);
+
+            movements = await trainRepository.GetMovementsById(Id, From, To);
+        }
+
+        public async void Search()
+        {
+            await LoadAsync();
+        }
 
         public void AddDiagramm()
         {
-            _config = new LineConfig();
+            ShowCharts = true;
+            _arr = new LineConfig();
 
-            _config.Options = new LineOptions
+            _arr.Options = new LineOptions
             {
                 Responsive = true,
                 Title = new OptionsTitle
                 {
                     Display = true,
-                    Text = "Анализ движения поездов"
-                },
-                //Scales = new Scales
-                //{
-                //    XAxes = new List<CartesianAxis>
-                //{
-                //    new LinearCartesianAxis
-                //    {
-                //        ScaleLabel = new ScaleLabel
-                //        {
-                //            Display = true,
-                //            LabelString = "Поезда"
-                //        },
-                //        Ticks = new LinearCartesianTicks
-                //        {
-                //            AutoSkip = false
-                //        }
-                //    }
-                //},
-                //    YAxes = new List<CartesianAxis>
-                //{
-                //    new LinearCartesianAxis
-                //    {
-                //        ScaleLabel = new ScaleLabel
-                //        {
-                //            Display = true,
-                //            LabelString = "Время (часы)"
-                //        },
-                //        Ticks = new LinearCartesianTicks
-                //        {
-                //            Min = DateTime.Now.Date.ToOADate(), // Минимальное значение (например, начало текущего дня)
-                //            Max = DateTime.Now.Date.AddDays(1).ToOADate()
-                //        }
-                //    }
-                //}
-                //}
+                    Text = "Зависимость прибытия поезда"
+                }
             };
 
-            foreach (var item in movements.Select(m => m.To))
+            _dep = new LineConfig();
+
+            _dep.Options = new LineOptions
             {
-                _config.Data.Labels.Add(item);
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Зависимость отправленияв"
+                }
+            };
+
+            _diff = new LineConfig();
+
+            _diff.Options = new LineOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Разница"
+                }
+            };
+
+            foreach (var item in movements)
+            {
+                _arr.Data.XLabels.Add(item.To);
+                _dep.Data.XLabels.Add(item.To);
+                _arr.Data.YLabels.Add(item.ScheduleArrivalTime.ToString("dd-MM-yyyy"));
+                _dep.Data.YLabels.Add(item.ScheduleDepartureTime.ToString("dd-MM-yyyy"));
+
+                _diff.Data.XLabels.Add(item.To);
             }
             //_config.Data.Labels.(movements.Select(m => m.Name));
+
+            var differenceArrival = new LineDataset<double>
+            {
+                Label = "Разница в прибытии",
+                BackgroundColor = ColorUtil.ColorHexString(255, 0, 255),
+                BorderColor = ColorUtil.ColorHexString(255, 0, 255),
+                Fill = false
+            };
+
+            var differenceDepartures = new LineDataset<double>
+            {
+                Label = "Разница в отправлении",
+                BackgroundColor = ColorUtil.ColorHexString(0, 0, 255),
+                BorderColor = ColorUtil.ColorHexString(0, 0, 255),
+                Fill = false
+            };
 
             var scheduledArrivals = new LineDataset<double>
             {
@@ -132,15 +162,21 @@ namespace Trains.Components.Pages
             foreach (var movement in movements)
             {
                 scheduledArrivals.Add(movement.ScheduleArrivalTime.ToOADate());
-                actualArrivals.Add(movement.RealArrivalTime.ToOADate() * 2);
+                actualArrivals.Add(movement.RealArrivalTime.ToOADate());
                 scheduledDepartures.Add(movement.ScheduleDepartureTime.ToOADate());
-                actualDepartures.Add(movement.RealDepartureTime.ToOADate() * 2);
+                actualDepartures.Add(movement.RealDepartureTime.ToOADate());
+                differenceArrival.Add(movement.DifferenceArrival.TotalMinutes);
+                differenceDepartures.Add(movement.DifferenceDeparture.TotalMinutes);
             }
 
-            _config.Data.Datasets.Add(scheduledArrivals);
-            _config.Data.Datasets.Add(actualArrivals);
-            _config.Data.Datasets.Add(scheduledDepartures);
-            _config.Data.Datasets.Add(actualDepartures);
+            _arr.Data.Datasets.Add(scheduledArrivals);
+            _arr.Data.Datasets.Add(actualArrivals);
+            _dep.Data.Datasets.Add(scheduledDepartures);
+            _dep.Data.Datasets.Add(actualDepartures);
+
+            _diff.Data.Datasets.Add(differenceArrival);
+            _diff.Data.Datasets.Add(differenceDepartures);
+
         }
 
     }
