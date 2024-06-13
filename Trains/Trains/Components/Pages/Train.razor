@@ -20,8 +20,20 @@ else
             <InputDate @bind-Value="To" />
 
             <button @onclick="Search">Поиск</button>
+            <div>
+                <button @onclick="AddLineDiagrammDepartures">Показать линейный график зависимости времени отправлений</button>
+                <button @onclick="AddBarDiagrammDepartures">Показать столбчатый график зависимости времени отправлений</button>
+            </div>
+            <div>
+                <button @onclick="AddLineDiagrammArrivals">Показать линейный график зависимости прибытий</button>
+                <button @onclick="AddBarDiagrammArrivals">Показать столбчатый график зависимости прибытий</button>
+            </div>
+            <div>
+                <button @onclick="AddDifferenceDiagramm">Показать линейный график разницы времен</button>
+                <button @onclick="AddBarDiagrammDifference">Показать столбчатый график разницы времен</button>
+            </div>
 
-            <button @onclick="AddDiagramm">Показать графики</button>
+            <button @onclick="GenerateExcelReport">Сформировать отчет</button>
         </div>
 
 
@@ -74,11 +86,29 @@ else
                 }
              </tbody>
          </table>
-         @if (ShowCharts)
+         @if (ShowLineDiagrammDepartures)
         {
-            <Chart Config="_arr" />
-            <Chart Config="_dep" />
-            <Chart Config="_diff" />
+            <Chart Config="_depLine" />
+        }
+        @if (ShowBarDiagrammDepartures)
+        {
+            <Chart Config="_depBar" />
+        }
+        @if (ShowLineDiagrammArrivals)
+        {
+            <Chart Config="_arrLine" />
+        }
+        @if (ShowBarDiagrammArrivals)
+        {
+            <Chart Config="_arrBar" />
+        }
+        @if (ShowDifferenceDiagramm)
+        {
+            <Chart Config="_diffLine" />
+        }
+        @if (ShowBarDifferenceDiagramm)
+        {
+            <Chart Config="_diffBar"/>
         }
     </div>
 }

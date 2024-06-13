@@ -20,6 +20,23 @@
 
     <!-- This is the glue between Blazor and Chart.js -->
     <script src="_content/ChartJs.Blazor.Fork/ChartJsBlazorInterop.js"></script>
+
+
+    <script>
+        function downloadFile(base64String, fileName) {
+            const link = document.createElement('a');
+            link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64String;
+            link.download = fileName;
+            link.click();
+        }
+    </script>
+
+    <script>
+        window.formatDate = function (value) {
+            var date = new Date(value * 86400000); // Преобразование из OADate в миллисекунды
+            return date.toLocaleDateString();
+        };
+    </script>
 </body>
 
 </html>

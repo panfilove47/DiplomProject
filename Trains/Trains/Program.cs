@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
 using Trains.Components;
 using Trains.Context;
 using Trains.Interfaces;
@@ -18,6 +19,7 @@ namespace Trains
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
             builder.Services.AddSingleton<ITrainRepository, TrainRepository>();
+            //builder.Services.AddScoped<IJSRuntime, JSRuntime>();
 
             // Add services to the container.
             builder.Services.AddRazorComponents()

@@ -70,7 +70,7 @@ namespace Trains.Services
                     query = @"select t.idtrain as 'Id', t.name as 'Name', concat(s.city, ""-"", s.name) as 'To', sc.DepartureTime as 'ScheduleDepartureTime', sc.ArrivalTime as 'ScheduleArrivalTime', tr.DepartureTime as 'RealDepartureTime', tr.ArrivalTime as 'RealArrivalTime' from train t
 join  schedule sc on t.idtrain = sc.Train_idTrain
 join trainroute tr on t.idtrain = tr.Train_idTrain
-join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id";
+join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id order by sc.DepartureTime";
                     result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id });
                 }
                 else if (To != null)
@@ -78,7 +78,7 @@ join Station s on s.idStation = sc.station_idStation and s.idStation = tr.statio
                     query = @"select t.idtrain as 'Id', t.name as 'Name', concat(s.city, ""-"", s.name) as 'To', sc.DepartureTime as 'ScheduleDepartureTime', sc.ArrivalTime as 'ScheduleArrivalTime', tr.DepartureTime as 'RealDepartureTime', tr.ArrivalTime as 'RealArrivalTime' from train t
 join  schedule sc on t.idtrain = sc.Train_idTrain
 join trainroute tr on t.idtrain = tr.Train_idTrain
-join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id and sc.DepartureTime < @To";
+join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id and sc.DepartureTime < @To order by sc.DepartureTime";
                     result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id, To });
                 }
                 else if (From != null)
@@ -86,7 +86,7 @@ join Station s on s.idStation = sc.station_idStation and s.idStation = tr.statio
                     query = @"select t.idtrain as 'Id', t.name as 'Name', concat(s.city, ""-"", s.name) as 'To', sc.DepartureTime as 'ScheduleDepartureTime', sc.ArrivalTime as 'ScheduleArrivalTime', tr.DepartureTime as 'RealDepartureTime', tr.ArrivalTime as 'RealArrivalTime' from train t
 join  schedule sc on t.idtrain = sc.Train_idTrain
 join trainroute tr on t.idtrain = tr.Train_idTrain
-join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id and sc.DepartureTime > @From";
+join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id and sc.DepartureTime > @From order by sc.DepartureTime";
                     result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id, From });
                 } 
                 else
@@ -94,7 +94,7 @@ join Station s on s.idStation = sc.station_idStation and s.idStation = tr.statio
                     query = @"select t.idtrain as 'Id', t.name as 'Name', concat(s.city, ""-"", s.name) as 'To', sc.DepartureTime as 'ScheduleDepartureTime', sc.ArrivalTime as 'ScheduleArrivalTime', tr.DepartureTime as 'RealDepartureTime', tr.ArrivalTime as 'RealArrivalTime' from train t
 join  schedule sc on t.idtrain = sc.Train_idTrain
 join trainroute tr on t.idtrain = tr.Train_idTrain
-join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id and sc.DepartureTime between @From and @To)";
+join Station s on s.idStation = sc.station_idStation and s.idStation = tr.station_idStation where t.Idtrain = @Id and sc.DepartureTime between @From and @To order by sc.DepartureTime";
                     result = await db.QueryAsync<TrainMovementsDto>(query, new { Id = id, To, From });
                 }
 

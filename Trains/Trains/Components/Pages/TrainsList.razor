@@ -3,6 +3,9 @@
 @using ChartJs.Blazor.PieChart
 <PageTitle>Trains</PageTitle>
 
+<label>Id поезда</label>
+<InputNumber @bind-Value="TrainId"/>
+<button @onclick="Search">Поиск</button>
 
 @if (Trains == null)
 {
