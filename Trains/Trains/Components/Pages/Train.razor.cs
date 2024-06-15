@@ -1,7 +1,6 @@
 ﻿using ChartJs.Blazor.BarChart;
 using ChartJs.Blazor.Common;
 using ChartJs.Blazor.Common.Axes;
-using ChartJs.Blazor.Common.Axes.Ticks;
 using ChartJs.Blazor.Common.Enums;
 using ChartJs.Blazor.Common.Time;
 using ChartJs.Blazor.LineChart;
@@ -13,7 +12,6 @@ using Microsoft.JSInterop;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
 using System.ComponentModel.DataAnnotations;
-using Trains.Helpers;
 using Trains.Interfaces;
 using Trains.Models.DTO;
 
@@ -191,12 +189,12 @@ namespace Trains.Components.Pages
                 {
                     Display = true,
                     Text = "Зависимость отправления поезда"
-                }
+                },
             };
 
             foreach (var item in movements)
             {
-                _depLine.Data.XLabels.Add(item.To);
+                _depLine.Data.Labels.Add(item.To);
             }
 
             var scheduledDepartures = new LineDataset<double>
